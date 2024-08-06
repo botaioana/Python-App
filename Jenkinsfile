@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/botaioana/Python-App.git'
+                git branch: 'main', url: 'https://github.com/botaioana/Python-App.git'
             }
         }
 
