@@ -42,7 +42,7 @@ pipeline {
                             if [ ! -z "\$CONTAINER_ID" ]; then
                                 echo "Stopping and removing existing container \$CONTAINER_ID"
                                 docker stop \$CONTAINER_ID && docker rm \$CONTAINER_ID
-                                sleep 10  # Adding a longer delay to ensure the port is freed
+                                sleep 15  # Adding a longer delay to ensure the port is freed
                             else
                                 echo "No existing container found"
                             fi
