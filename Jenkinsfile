@@ -12,8 +12,8 @@ pipeline {
         stage('Clone Repository on Docker Instance') {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} <<EOF
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} << 'EOF'
                         if [ ! -d "${PROJECT_DIR}" ]; then
                             git clone ${REPO_URL} ${PROJECT_DIR}
                         else
@@ -21,7 +21,7 @@ pipeline {
                             git pull origin main
                         fi
                         EOF
-                    '''
+                    """
                 }
             }
         }
@@ -29,12 +29,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} <<EOF
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} << 'EOF'
                         cd ${PROJECT_DIR}
                         docker build -t python-app:${BUILD_ID} .
                         EOF
-                    '''
+                    """
                 }
             }
         }
@@ -42,11 +42,11 @@ pipeline {
         stage('Deploy to Docker') {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} <<EOF
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} << 'EOF'
                         docker run -d -p 8080:8080 python-app:${BUILD_ID}
                         EOF
-                    '''
+                    """
                 }
             }
         }
