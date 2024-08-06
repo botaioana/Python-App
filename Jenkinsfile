@@ -33,7 +33,7 @@ pipeline {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'docker run -d -p 8080:8080 python-app:${BUILD_ID}'
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'docker run -d -p 8080:8000 python-app:${BUILD_ID}'
                     """
                 }
             }
