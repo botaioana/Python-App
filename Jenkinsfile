@@ -13,17 +13,7 @@ pipeline {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} <<EOF
-                        echo "Checking if project directory exists..."
-                        if [ ! -d "${PROJECT_DIR}" ]; then
-                            echo "Directory not found. Cloning repository..."
-                            git clone ${REPO_URL} ${PROJECT_DIR}
-                        else
-                            echo "Directory found. Pulling latest changes..."
-                            cd ${PROJECT_DIR}
-                            git pull origin main
-                        fi
-                        EOF
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'if [ ! -d "${PROJECT_DIR}" ]; then git clone ${REPO_URL} ${PROJECT_DIR}; else cd ${PROJECT_DIR} && git pull origin main; fi'
                     """
                 }
             }
@@ -33,12 +23,7 @@ pipeline {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} <<EOF
-                        echo "Navigating to project directory..."
-                        cd ${PROJECT_DIR}
-                        echo "Building Docker image..."
-                        docker build -t python-app:${BUILD_ID} .
-                        EOF
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'cd ${PROJECT_DIR} && docker build -t python-app:${BUILD_ID} .'
                     """
                 }
             }
@@ -48,10 +33,7 @@ pipeline {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} <<EOF
-                        echo "Running Docker container..."
-                        docker run -d -p 8080:8080 python-app:${BUILD_ID}
-                        EOF
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'docker run -d -p 8080:8080 python-app:${BUILD_ID}'
                     """
                 }
             }
