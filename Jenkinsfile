@@ -42,7 +42,7 @@ pipeline {
                             if [ ! -z "\$CONTAINER_ID" ]; then
                                 echo "Stopping and removing existing container \$CONTAINER_ID"
                                 docker stop \$CONTAINER_ID && docker rm \$CONTAINER_ID
-                                sleep 5  # Adding a delay to ensure the port is freed
+                                sleep 10  # Adding a longer delay to ensure the port is freed
                             else
                                 echo "No existing container found"
                             fi
@@ -59,7 +59,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} '
                             while lsof -i:8080; do
                                 echo "Port 8080 is still in use. Waiting..."
-                                sleep 1
+                                sleep 5  # Increased sleep duration to give more time for the port to be freed
                             done
                             docker run -d --name python-app -p 8080:8000 python-app:${BUILD_ID}
                         '
