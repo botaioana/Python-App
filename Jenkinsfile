@@ -17,6 +17,7 @@ pipeline {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ec2-user@ec2-35-158-140-230.eu-central-1.compute.amazonaws.com << EOF
+                        cd /c/Users/Ioana/python-docker-example
                         docker build -t python-app:${BUILD_ID} .
                         EOF
                     '''
