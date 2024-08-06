@@ -8,6 +8,10 @@ pipeline {
         PROJECT_DIR = '/home/ec2-user/Python-App'
     }
 
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage('Clone Repository on Docker Instance') {
             steps {
@@ -29,11 +33,21 @@ pipeline {
             }
         }
 
+        stage('Stop Previous Container') {
+            steps {
+                sshagent([SSH_CREDENTIALS_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'docker ps -q --filter "name=python-app" | grep -q . && docker stop python-app && docker rm python-app || true'
+                    """
+                }
+            }
+        }
+
         stage('Deploy to Docker') {
             steps {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'docker run -d -p 8080:8000 python-app:${BUILD_ID}'
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'docker run -d --name python-app -p 8080:8000 python-app:${BUILD_ID}'
                     """
                 }
             }
