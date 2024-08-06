@@ -40,7 +40,10 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} '
                             CONTAINER_ID=\$(docker ps -a -q --filter "name=python-app")
                             if [ ! -z "\$CONTAINER_ID" ]; then
+                                echo "Stopping and removing existing container \$CONTAINER_ID"
                                 docker stop \$CONTAINER_ID && docker rm \$CONTAINER_ID
+                            else
+                                echo "No existing container found"
                             fi
                         '
                     """
