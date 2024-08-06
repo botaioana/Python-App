@@ -38,7 +38,7 @@ pipeline {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} '
-                            CONTAINER_ID=\$(docker ps -q --filter "name=python-app")
+                            CONTAINER_ID=\$(docker ps -a -q --filter "name=python-app")
                             if [ ! -z "\$CONTAINER_ID" ]; then
                                 docker stop \$CONTAINER_ID && docker rm \$CONTAINER_ID
                             fi
