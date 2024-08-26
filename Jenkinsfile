@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Clone Repository on Docker Instance') {
             steps {
-                sshagent([SSH_CREDENTIALS_ID]) {
+                sshagent([SSH_CREDENTIALS_ID]) {//if the project doesn't exist at the location, it clones it, else it pulls it
                     sh """
                         ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} 'if [ ! -d "${PROJECT_DIR}" ]; then git clone ${REPO_URL} ${PROJECT_DIR}; else cd ${PROJECT_DIR} && git pull origin main; fi'
                     """
@@ -47,6 +47,24 @@ pipeline {
                                 echo "No existing container found"
                             fi
                         '
+                    """
+                }
+            }
+        }
+        stage('Stop Previous Image') {
+            steps {
+                sshagent([SSH_CREDENTIALS_ID]) {
+                    sh"""
+                        ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} '
+                        IMAGE_ID=\$(docker image -q --filter "name=python-app")
+                        if [ ! -z "\$IMAGE_ID"]; then
+                            echo "Stopping and removing existing image \$IMAGE_ID"
+                            docker rmi \$IMAGE_ID
+                            sleep 15
+                        else
+                            echo "No existing image found"
+                        fi
+                    '
                     """
                 }
             }

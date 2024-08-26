@@ -11,7 +11,7 @@ version: '3.8'
 
 services:
   python-app:
-    image: python-app:latest
+    image: python-app
     container_name: python-app
     ports:
       - "8080:8000"
