@@ -56,7 +56,7 @@ pipeline {
                 sshagent([SSH_CREDENTIALS_ID]) {
                     sh"""
                         ssh -o StrictHostKeyChecking=no ${DOCKER_INSTANCE} '
-                        IMAGE_ID=\$(docker image -q --filter "name=python-app")
+                        IMAGE_ID=\$(docker images -q --filter "name=python-app")
                         if [ ! -z "\$IMAGE_ID"]; then
                             echo "Stopping and removing existing image \$IMAGE_ID"
                             docker rmi \$IMAGE_ID
